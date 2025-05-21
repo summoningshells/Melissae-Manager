@@ -1,0 +1,60 @@
+services:
+
+  melissae_dashboard: 
+    image: nginx:latest 
+    container_name: melissae_dashboard 
+    ports: 
+      - "127.0.0.1:9999:80" 
+    volumes: 
+      - ./dashboard:/usr/share/nginx/html:ro
+      - ./dashboard/conf/dashboard.conf:/etc/nginx/conf.d/default.conf:ro
+    
+  melissae_apache1:
+    build:
+      context: .
+      dockerfile: modules/web/Dockerfile
+    container_name: melissae_apache1
+
+  melissae_apache2:
+    build:
+      context: .
+      dockerfile: modules/web/Dockerfile
+    container_name: melissae_apache2
+
+  melissae_proxy:
+    image: nginx:latest
+    container_name: melissae_proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./modules/web/conf/proxy.conf:/etc/nginx/nginx.conf:ro
+      - ./modules/web/logs:/var/log/nginx
+    depends_on:
+      - melissae_apache1
+      - melissae_apache2
+
+  melissae_ftp:
+    image: fauria/vsftpd
+    container_name: melissae_ftp
+    ports:
+      - "21:21"
+    environment:
+      FTP_USER: ftpuser
+      FTP_PASS: ftppass
+      PASV_ENABLE: "NO"
+      LOCAL_UMASK: 000
+      FILE_OPEN_MODE: 0777
+    volumes:
+      - ./modules/ftp/server:/home/vsftpd
+      - ./modules/ftp/logs/vsftpd.log:/var/log/vsftpd.log
+
+  melissae_ssh:
+    build:
+      context: .
+      dockerfile: modules/ssh/Dockerfile
+    container_name: melissae_ssh
+    hostname: ubuntu-server
+    ports:
+      - "22:22"
+    volumes:
+      - ./modules/ssh/logs:/host-logs/ssh

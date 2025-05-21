@@ -1,0 +1,433 @@
+/* ============================= */
+/*          GLOBAL RESET         */
+/* ============================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ============================= */
+/*          BASE STYLES          */
+/* ============================= */
+body {
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
+    background-color: #dbdbdb;
+    color: #2c3e50;
+    line-height: 1.6;
+}
+
+/* ============================= */
+/*          NAVIGATION           */
+/* ============================= */
+.navbar {
+    background: linear-gradient(135deg, #000000 0%, #000000 100%);
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.logo {
+    height: 40px;
+    width: auto;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.navbar-menu {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-item {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.nav-item.active {
+    color: white;
+    background-color: rgba(255,255,255,0.1);
+}
+
+.nav-item:hover {
+    color: white;
+    background-color: rgba(255,255,255,0.15);
+}
+
+/* ============================= */
+/*          DASHBOARD            */
+/* ============================= */
+.dashboard-container {
+    max-width: 1400px;
+    margin: 0rem auto;
+    padding: 1rem;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-top: 2rem;
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+/* ============================= */
+/*         INTERACTIONS          */
+/* ============================= */
+.search-bar {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+}
+
+#searchInput {
+    flex: 1;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+#searchInput:focus {
+    border-color: #000000;
+    outline: none;
+}
+
+#searchButton {
+    padding: 1rem 2rem;
+    background-color: #000000;
+    border-color: #96e910;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#searchButton:hover {
+    background-color: #696969;
+}
+
+#exportButton {
+    background-color: #6c6b72;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background-color 0.3s;
+}
+
+#exportButton:hover {
+    background-color: #070707;
+}
+
+#results {
+    margin-top: 2rem;
+}
+
+/* ============================= */
+/*       DATA VISUALIZATION      */
+/* ============================= */
+.stat-card.success {
+    background-color: #d9e7d9 !important;
+    border-color: #d0e0d1;
+}
+
+.stat-card.alert {
+    background-color: #f8dedc !important;
+    border-color: #f0cfcf;
+}
+
+.stat-card:not([onclick]) {
+    cursor: default;
+    opacity: 0.9;
+}
+
+.stat-card {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(1, 40, 78, 0.05);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.stat-card:hover::after {
+    opacity: 1;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.no-results {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    font-style: italic;
+}
+
+/* ============================= */
+/*          DATA TABLES          */
+/* ============================= */
+.log-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgb(255, 255, 255);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    animation: fadeIn 0.5s ease;
+    border-radius: 9px;
+    overflow: hidden;  
+}
+
+.log-table th,
+.log-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+
+.log-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.log-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* ============================= */
+/*          DATA CHARTS          */
+/* ============================= */
+.chart-container {
+    margin-top: 1rem;
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.chart-wrapper {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.chart-wrapper h3 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #666;
+}
+
+#activityChart {
+    height: 200px !important;
+    width: 1100px !important;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+#protocolChart {
+    height: 200px !important;
+    width: 200px !important;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+#ipsChart {
+    height: 200px !important;
+    width: 200px !important;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* ============================= */
+/*        UI COMPONENTS          */
+/* ============================= */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.stat-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #000000;
+}
+
+.stat-label {
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+.highlight {
+    background-color: #fff3cd;
+    padding: 2px;
+    border-radius: 2px;
+}
+
+.protocol-tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.protocol-ssh {
+    background-color: #e8f0fe;
+    color: #1a73e8;
+}
+
+.protocol-ftp {
+    background-color: #e6f4ea;
+    color: #34a853;
+}
+
+.protocol-http {
+    background-color: #fae7ff;
+    color: #c758d1;
+}
+
+/* ============================= */
+/*      ANIMATIONS & EFFECTS     */
+/* ============================= */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+#bee-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    background: #0a1a0a;
+}
+
+/* ============================= */
+/*      RESPONSIVE DESIGN        */
+/* ============================= */
+@media (max-width: 768px) {
+    .navbar-container {
+        flex-direction: column;
+        gap: 0rem;
+        padding: 0rem;
+    }
+    
+    .navbar-menu {
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .nav-item {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .search-bar {
+        flex-direction: column;
+    }
+    
+    #searchButton {
+        width: 100%;
+    }
+    
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .log-table th,
+    .log-table td {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.75rem;
+    }
+    
+    .stat-value {
+        font-size: 1.75rem;
+    }
+    
+    .chart-container {
+        padding: 1rem;
+    }
+    
+    .chart-wrapper {
+        padding: 1rem;
+    }
+}
