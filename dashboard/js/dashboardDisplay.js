@@ -71,6 +71,10 @@ function generateStatistics() {
             <div class="stat-value">${stats.failedFTPAttempts}</div>
             <div class="stat-label">Failed FTP Logins</div>
         </div>
+        <div class="stat-card" onclick="redirectToSearch('action:read and protocol:modbus')">
+            <div class="stat-value">${stats.modbusReads}</div>
+            <div class="stat-label">Modbus Reads</div>
+        </div>
         <div class="stat-card ${stats.successSSHLogins > 0 ? 'alert' : 'success'}" onclick="redirectToSearch('action:successful and protocol:ssh')">
             <div class="stat-value">${stats.successSSHLogins}</div>
             <div class="stat-label">Successful SSH Logins</div>
@@ -78,10 +82,6 @@ function generateStatistics() {
         <div class="stat-card ${stats.successFTPLogins > 0 ? 'alert' : 'success'}" onclick="redirectToSearch('action:successful and protocol:ftp')">
             <div class="stat-value">${stats.successFTPLogins}</div>
             <div class="stat-label">Successful FTP Logins</div>
-        </div>
-        <div class="stat-card" onclick="redirectToSearch('action:read and protocol:modbus')">
-            <div class="stat-value">${stats.modbusReads}</div>
-            <div class="stat-label">Modbus Reads</div>
         </div>
         <div class="stat-card ${stats.modbusWrites > 0 ? 'alert' : 'success'}" onclick="redirectToSearch('action:write and protocol:modbus')">
             <div class="stat-value">${stats.modbusWrites}</div>
