@@ -104,6 +104,8 @@ The infrastructure is fully containerized with docker, and modules can be deploy
     |   |       |-- sshd.log
     |   |-- modbus
     |   |   |-- Dockerfile
+    |   |   |-- server
+    |   |       |-- server.py
     |   |   |-- logs
     |   |       |-- modbus.log
     |    -- web
