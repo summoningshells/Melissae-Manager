@@ -39,7 +39,7 @@ def calculate_protocol_score(ip_data):
         return 5
 
     # Malicious - Single successful compromise or multiple protocols with Modbus reads
-    elif ssh_success or ftp_success or (modbus_write and (ssh_failed or ftp_failed)):
+    elif ssh_success or ftp_success or modbus_write:
         return 4
 
     # Suspicious - Failed attempts or excessive HTTP or Modbus reconnaissance
