@@ -34,11 +34,11 @@ def calculate_protocol_score(ip_data):
             elif 'read' in action:
                 modbus_read = True
 
-    # Nefarious - Multiple successful compromises or Modbus writes
+    # Nefarious - Multiple successful compromises or Modbus writes and one successful compromise
     if (ssh_success and ftp_success) or (modbus_write and (ssh_success or ftp_success)):
         return 5
 
-    # Malicious - Single successful compromise or multiple protocols with Modbus reads
+    # Malicious - Single successful compromise or multiple protocols failed with Modbus writes
     elif (ssh_success or ftp_success) or (modbus_write and (ssh_failed or ftp_failed)):
         return 4
 
