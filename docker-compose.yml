@@ -58,3 +58,13 @@ services:
       - "22:22"
     volumes:
       - ./modules/ssh/logs:/host-logs/ssh
+
+  melissae_modbus:
+    build:
+      context: .
+      dockerfile: modules/modbus/Dockerfile
+    container_name: melissae_modbus
+    ports:
+      - "502:502"
+    volumes:
+      - ./modules/modbus/logs:/host-logs/modbus
