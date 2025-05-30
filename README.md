@@ -259,7 +259,7 @@ There are currently 4 native modules:
   - **Threat Escalation**: Write attempts trigger high-severity threat alerts
 
 - Usage
-  - **Default Profile**: Siemens S7-1200 (modify in `docker-compose.yml` to use `schneider` profile)
+  - **Default Profile**: Siemens S7-1200 (modify in `modules/modbus/Dockerfile` to use `schneider` profile)
   - **Port**: Standard Modbus TCP port 502
   - **Device Profiles**:
     - **Siemens**: S7-xxxxxx serials, V3.x-V4.x firmware, 1000 registers
