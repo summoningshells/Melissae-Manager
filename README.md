@@ -21,7 +21,8 @@ The project includes a fully functional dashboard offering real-time visibility 
 3. [Modules](#modules)
     - [Web](#web) 
     - [SSH](#ssh) 
-    - [FTP](#ftp) 
+    - [FTP](#ftp)
+    - [Modbus](#modbus) 
 4. [Search Engine](#search-engine)
 5. [Threat Intelligence](#threat-intelligence)
 6. [Getting Started](#getting-started)
@@ -30,13 +31,14 @@ The project includes a fully functional dashboard offering real-time visibility 
     - [Accessing the Dashboard](#accessing-the-dashboard)
     - [Destroying the Stack](#destroying-the-stack)
 7. [Contributing](#contributing)
+8. [Credits](#credits)
 
 ---
 ## Overview
 
 #### Key Features
 
-**Modular Service Support**: Configure Melissae to expose between 1 and 3 services simultaneously, allowing for flexible deployment scenarios tailored to your specific security needs. See [contributing](#contributing) if you're interested in developing new modules.  
+**Modular Service Support**: Configure Melissae to expose between 1 and 4 services simultaneously, allowing for flexible deployment scenarios tailored to your specific security needs. See [contributing](#contributing) if you're interested in developing new modules.  
   
   
 **Centralized Management Dashboard**: Monitor and manage your honeypot through a web-based dashboard, which offers:
@@ -101,6 +103,12 @@ The infrastructure is fully containerized with docker, and modules can be deploy
     |   |   |-- logs
     |   |       |-- commands.log
     |   |       |-- sshd.log
+    |   |-- modbus
+    |   |   |-- Dockerfile
+    |   |   |-- server
+    |   |       |-- server.py
+    |   |   |-- logs
+    |   |       |-- modbus.log
     |    -- web
     |       |-- Dockerfile
     |       |-- conf
@@ -129,7 +137,7 @@ The various module logs are processed by logParser.py, which parses and formats 
 
 ## Modules
 The choice of modular, containerized deployment means that contributors can easily develop new modules. 
-There are currently 3 native modules:
+There are currently 4 native modules:
 
 #### Web
 
@@ -216,6 +224,47 @@ There are currently 3 native modules:
   - The shared repository with the ftp container is `modules/ftp/server`
   - You need to modify your module credentials here : `docker-compose.yml` (Default `ftpuser:ftppass`)
 
+---
+
+#### Modbus
+
+| Type | Image | Container name|
+| :-------------------: | :----------: | :----------: |
+| Modbus TCP Server     | python:3.11-slim with custom modbus server | melissae_modbus |
+
+- Logs format
+
+```json
+[
+  {
+    "protocol": "modbus",
+    "date": "2025-05-30",
+    "hour": "10:38:23",
+    "ip": "172.18.0.1",
+    "action": "Read request - Read Holding Registers"
+  },
+  {
+    "protocol": "modbus",
+    "date": "2025-05-30", 
+    "hour": "10:41:22",
+    "ip": "172.18.0.1",
+    "action": "Write attempt - Write Multiple Registers"
+  }
+]
+```
+
+- Features
+  - **Industrial PLC Emulation**: Simulates Siemens S7-1200 and Schneider Electric M340 PLCs
+  - **Randomized Device Identifiers**: Generates unique serial numbers and firmware versions on each startup
+  - **Protocol Detection**: Logs all Modbus function codes (read/write operations)
+  - **Threat Escalation**: Write attempts trigger high-severity threat alerts
+
+- Usage
+  - **Default Profile**: Siemens S7-1200 (modify in `modules/modbus/Dockerfile` to use `schneider` profile)
+  - **Port**: Standard Modbus TCP port 502
+  - **Device Profiles**:
+    - **Siemens**: S7-xxxxxx serials, V3.x-V4.x firmware, 1000 registers
+    - **Schneider**: M340-xxxxx-X serials, V2.x-V3.x firmware, 2000 registers
 
 ---
 
@@ -228,9 +277,9 @@ See [contributing](#contributing) if you're interested in developing the threat 
 There are 5 different verdicts:
 
 - **Benign**: Threat requested the web module < 50 times  
-- **Suspicious**: Threat requested the web module > 50 times OR (attempted to connect using SSH OR FTP) 
-- **Malicious**: Threat successfully connected via SSH OR FTP  
-- **Nefarious**: Threat connected via both SSH AND FTP  
+- **Suspicious**: Threat requested the web module > 50 times OR (Attempted to connect using SSH OR FTP) OR Performed Modbus read operations.
+- **Malicious**: Threat successfully connected via SSH OR FTP OR (Performed Modbus write operations AND Failed to connect to SSH OR FTP).
+- **Nefarious**: Threat connected via both SSH AND FTP OR (Performed Modbus write operations AND Successfuly connected via SSH OR FTP).
 
 ![threat-intel](https://github.com/user-attachments/assets/b6e9fc77-18b5-4528-a08a-a8e5cbeec82c)
 
@@ -274,8 +323,10 @@ IoCs can be exported in json.
 user:root and protocol:ssh
 ip:192.168.X.X or ip:192.168.X.Y or ip:192.168.X.Z
 protocol:http and not action:success
+protocol:modbus and action:write
 user:admin or not path:/login
 !ip:192.168.X.X and action:failed
+protocol:modbus and action:read
 ```
 
 ![search](https://github.com/user-attachments/assets/e8476368-baba-4c22-a1de-b99ffc2150c5)
@@ -329,7 +380,21 @@ usermod -aG docker your_username
 **Start your stack**
 
 ```bash
-./melissae start [module 1] [module 2] [...]
+./melissae.sh start [module 1] [module 2] [...]
+```
+
+Available modules: `all`, `web`, `ssh`, `ftp`, `modbus`
+
+Examples:
+```bash
+# Start all modules
+./melissae.sh start all
+
+# Start specific modules
+./melissae.sh start web ssh modbus
+
+# Start only Modbus honeypot
+./melissae.sh start modbus
 ```
     
 Your stack should now be deployed.
@@ -364,7 +429,7 @@ Then access the dasboard in your browser :
 You can destroy your stack easily with :
 
 ```bash
-./melissae destroy
+./melissae.sh destroy
 ```
 
 ---
@@ -377,6 +442,13 @@ Discord : https://discord.gg/RXWn85cnYm
 
 Priority Tasks :
 
- - [ ] New modules need to be developed
+ - [x] **Modbus Industrial Honeypot Module** - Complete TCP honeypot with PLC emulation
+ - [ ] New modules need to be developed (SNMP, MQTT, etc.)
  - [ ] Improve the search engine
  - [ ] Threat Intelligence must be developed
+
+## Credits
+
+Thank you to all contributors for helping the project move forward.
+
+- summoningshells (https://github.com/summoningshells)
