@@ -5,7 +5,7 @@ RUN useradd -m -s /bin/bash modbus && \
     chown -R modbus:modbus /host-logs/modbus && \
     chmod 777 /host-logs/modbus
 
-COPY modules/modbus/server.py /opt/modbus/server.py
+COPY modules/modbus/server/server.py /opt/modbus/server.py
 RUN chmod +x /opt/modbus/server.py && \
     chown modbus:modbus /opt/modbus/server.py
 
