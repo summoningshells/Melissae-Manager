@@ -277,9 +277,9 @@ See [contributing](#contributing) if you're interested in developing the threat 
 There are 5 different verdicts:
 
 - **Benign**: Threat requested the web module < 50 times  
-- **Suspicious**: Threat requested the web module > 50 times OR (attempted to connect using SSH OR FTP) OR performed Modbus read operations
-- **Malicious**: Threat successfully connected via SSH OR FTP OR (performed Modbus writes + other failed attempts)
-- **Nefarious**: Threat connected via both SSH AND FTP OR (performed Modbus write operations + a successful connection via SSH or FTP)
+- **Suspicious**: Threat requested the web module > 50 times OR (Attempted to connect using SSH OR FTP) OR Performed Modbus read operations.
+- **Malicious**: Threat successfully connected via SSH OR FTP OR (Performed Modbus write operations AND Failed to connect to SSH OR FTP).
+- **Nefarious**: Threat connected via both SSH AND FTP OR (Performed Modbus write operations AND Successfuly connected via SSH OR FTP).
 
 ![threat-intel](https://github.com/user-attachments/assets/b6e9fc77-18b5-4528-a08a-a8e5cbeec82c)
 
