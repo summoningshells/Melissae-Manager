@@ -34,6 +34,10 @@ PATTERNS = {
     'http': {
         'source': 'modules/web/logs/access.log',
         'pattern': re.compile(r'^(\S+) - - \[(.*?)\] "(GET|POST|PUT|DELETE|HEAD|OPTIONS|PROPFIND|EWYM) (\S+) HTTP/\d\.\d" (\d+) \d+ ".*?" "(.*?)"$')
+    },
+    'modbus': {
+        'source': 'modules/modbus/logs/modbus.log',
+        'pattern': re.compile(r'(?P<date>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) \| (?P<ip>\d+\.\d+\.\d+\.\d+) \| (?P<action>.+?)(?:\s\|\s(?P<details>\{.*\}))?$')
     }
 }
 
@@ -159,6 +163,39 @@ def process_http() -> List[Dict]:
                 logs.append(entry)
     return logs
 
+# Modbus Module parsing & processing
+def parse_modbus_line(line: str) -> Optional[Dict]:
+    match = PATTERNS['modbus']['pattern'].match(line.strip())
+    if not match:
+        return None
+    
+    dt = datetime.strptime(match.group('date'), "%Y-%m-%d %H:%M:%S")
+    ip = match.group('ip')
+    action = match.group('action')
+    details = match.group('details')
+    
+    if details:
+        try:
+            details_json = json.loads(details)
+            if 'function' in details_json:
+                action = f"{action} - {details_json['function']}"
+        except json.JSONDecodeError:
+            pass
+    
+    return create_entry('modbus', dt, ip, action)
+
+def process_modbus() -> List[Dict]:
+    logs = []
+    source = os.path.join(WORKING_DIR, PATTERNS['modbus']['source'])
+    if not os.path.exists(source):
+        return logs
+    with open(source, 'r', encoding='utf-8') as f:
+        for line in f:
+            entry = parse_modbus_line(line)
+            if entry:
+                logs.append(entry)
+    return logs
+
 # Merging logs
 def merge_and_save(all_logs: List[Dict]) -> None:
     seen = set()
@@ -180,4 +217,5 @@ if __name__ == "__main__":
     all_logs.extend(process_ssh_commands())
     all_logs.extend(process_ftp())
     all_logs.extend(process_http())
+    all_logs.extend(process_modbus())
     merge_and_save(all_logs)
