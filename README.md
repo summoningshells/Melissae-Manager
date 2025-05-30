@@ -31,6 +31,7 @@ The project includes a fully functional dashboard offering real-time visibility 
     - [Accessing the Dashboard](#accessing-the-dashboard)
     - [Destroying the Stack](#destroying-the-stack)
 7. [Contributing](#contributing)
+8. [Credits](#credits)
 
 ---
 ## Overview
@@ -277,8 +278,8 @@ There are 5 different verdicts:
 
 - **Benign**: Threat requested the web module < 50 times  
 - **Suspicious**: Threat requested the web module > 50 times OR (attempted to connect using SSH OR FTP) OR performed Modbus read operations
-- **Malicious**: Threat successfully connected via SSH OR FTP OR (performed Modbus reads + other failed attempts)
-- **Nefarious**: Threat connected via both SSH AND FTP OR performed Modbus write operations  
+- **Malicious**: Threat successfully connected via SSH OR FTP OR (performed Modbus writes + other failed attempts)
+- **Nefarious**: Threat connected via both SSH AND FTP OR (performed Modbus write operations + a successful connection via SSH or FTP)
 
 ![threat-intel](https://github.com/user-attachments/assets/b6e9fc77-18b5-4528-a08a-a8e5cbeec82c)
 
@@ -445,3 +446,9 @@ Priority Tasks :
  - [ ] New modules need to be developed (SNMP, MQTT, etc.)
  - [ ] Improve the search engine
  - [ ] Threat Intelligence must be developed
+
+## Credits
+
+Thank you to all contributors for helping the project move forward.
+
+- summoningshells (https://github.com/summoningshells)
