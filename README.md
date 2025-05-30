@@ -229,7 +229,7 @@ There are currently 4 native modules:
 
 | Type | Image | Container name|
 | :-------------------: | :----------: | :----------: |
-| Modbus TCP Server     | python:3.11-slim with custom honeypot | melissae_modbus |
+| Modbus TCP Server     | python:3.11-slim with custom modbus server | melissae_modbus |
 
 - Logs format
 
