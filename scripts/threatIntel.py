@@ -47,7 +47,7 @@ def calculate_protocol_score(ip_data):
         return 2
 
     # Benign
-    elif http_count > 0:
+    else:
         return 1
 
     return 0
