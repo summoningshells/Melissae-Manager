@@ -396,18 +396,6 @@ The Multi-Instance dashboard provides:
 - **Aggregated Threat Counts**: Total threats across all instances
 - **Recent Activity**: Activity in the last hour across all instances
 
-#### Instance Status Monitor
-- **Real-time Status**: Online/offline status of each instance
-- **Last Seen Timestamps**: When each instance last reported
-- **Per-Instance Statistics**: Log and threat counts for each instance
-- **Hostname Information**: Identifying information for each instance
-
-#### Aggregated Views
-- **Combined Activity Charts**: 24-hour activity across all instances
-- **Protocol Distribution**: Protocol usage across the entire network
-- **Top Threats**: Most active attackers across all instances
-- **Geographic Correlation**: Attackers active on multiple instances
-
 #### View Modes
 - **Aggregated View**: Combined statistics from all instances
 - **By Instance**: Detailed breakdown showing each instance separately
