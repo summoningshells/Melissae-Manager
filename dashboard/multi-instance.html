@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melissae Multi-Instance Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/multi-instance.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+</head>
+<body>
+
+<canvas id="bee-bg"></canvas>
+
+<nav class="navbar">
+    <div class="navbar-container">
+        <div class="navbar-brand">
+            <img src="img/logo.png" alt="Logo Melissae" class="logo">
+            <span>Melissae</span>
+        </div>
+        <div class="navbar-menu">
+            <a href="dashboard.html" class="nav-item">Dashboard</a>
+            <a href="threat-intel.html" class="nav-item">Threat Intelligence</a>
+            <a href="search.html" class="nav-item">Search</a>
+            <a href="multi-instance.html" class="nav-item active">Multi-Instance</a>
+        </div>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+    <div class="multi-instance-header">
+        <h2>Multi-Instance Overview</h2>
+        <div class="instance-controls">
+            <button id="refreshBtn" class="btn btn-primary">Refresh</button>
+            <select id="viewModeSelect" class="view-select">
+                <option value="aggregated">Aggregated View</option>
+                <option value="by-instance">By Instance</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="stats-grid" id="multiStatsGrid">
+        <div class="stat-card">
+            <div class="stat-value">...</div>
+            <div class="stat-label">Loading</div>
+        </div>
+    </div>
+
+    <div class="instances-status" id="instancesStatus">
+        <h3>Connected Instances</h3>
+        <div class="instances-grid" id="instancesGrid">
+            <div class="instance-card loading">
+                <div class="instance-status"></div>
+                <div class="instance-info">Loading instances...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <h3>Multi-Instance Activity</h3>
+        <canvas id="multiActivityChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <h3>Cross-Instance Statistics</h3>
+        <div class="charts-grid">
+            <div class="chart-wrapper">
+                <h3>Protocols Across Instances</h3>
+                <canvas id="multiProtocolChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <h3>Top Threats (All Instances)</h3>
+                <canvas id="multiThreatsChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="instances-details" id="instancesDetails" style="display: none;">
+        <h3>Instance Details</h3>
+        <div class="instances-breakdown" id="instancesBreakdown">
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/multiInstanceDisplay.js" type="module"></script>
+<script src="js/backgroundDisplay.js" defer></script>
+</body>
+</html>

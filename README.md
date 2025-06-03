@@ -23,15 +23,21 @@ The project includes a fully functional dashboard offering real-time visibility 
     - [SSH](#ssh) 
     - [FTP](#ftp)
     - [Modbus](#modbus) 
-4. [Search Engine](#search-engine)
-5. [Threat Intelligence](#threat-intelligence)
-6. [Getting Started](#getting-started)
+4. [Multi-Instance Mode](#multi-instance-mode)
+    - [Architecture](#multi-instance-architecture)
+    - [Quickstart](#multi-instance-quickstart)
+    - [Configuration](#multi-instance-configuration)
+    - [Dashboard](#multi-instance-dashboard)
+    - [Security](#multi-instance-security)
+5. [Search Engine](#search-engine)
+6. [Threat Intelligence](#threat-intelligence)
+7. [Getting Started](#getting-started)
     - [Installation](#installation)
     - [Starting up the Stack](#starting-up-the-stack)
     - [Accessing the Dashboard](#accessing-the-dashboard)
     - [Destroying the Stack](#destroying-the-stack)
-7. [Contributing](#contributing)
-8. [Credits](#credits)
+8. [Contributing](#contributing)
+9. [Credits](#credits)
 
 ---
 ## Overview
@@ -39,13 +45,15 @@ The project includes a fully functional dashboard offering real-time visibility 
 #### Key Features
 
 **Modular Service Support**: Configure Melissae to expose between 1 and 4 services simultaneously, allowing for flexible deployment scenarios tailored to your specific security needs. See [contributing](#contributing) if you're interested in developing new modules.  
-  
+
+**Multi-Instance Deployment**: Scale your honeypot infrastructure across multiple locations with the optional Multi-Instance mode. Deploy agents that report to a central server for coordinated threat intelligence and unified dashboard views.
   
 **Centralized Management Dashboard**: Monitor and manage your honeypot through a web-based dashboard, which offers:
 - **Statistical Analysis**: Visualize attack patterns, trends, and frequency.
 - **Advanced Log Search**: Utilize the Melissae Query Language (MQL), a simple query language (that will be developed more in the future), to perform searches within the captured logs.
 - **Data Export**: Export logs or Indicators of Compromise (IOCs) in JSON format, filtered according to specific criteria such as time, service type, or threat verdict.
 - **Threat Scoring**: Assess attacker danger levels with a built-in scoring system, categorizing threats by severity. This helps prioritize responses and allocate resources effectively.
+- **Multi-Instance Overview**: When configured as a server, view aggregated statistics and activity across all connected honeypot instances.
 
 ---
 
@@ -268,6 +276,155 @@ There are currently 4 native modules:
 
 ---
 
+## Multi-Instance Mode
+
+Melissae supports an optional Multi-Instance mode that allows you to deploy multiple honeypot instances across different networks and aggregate their data through a central server. This enables coordinated threat intelligence gathering and provides a unified view of attacker activity across your entire honeypot infrastructure.
+
+### Multi-Instance Architecture
+
+The Multi-Instance system follows a simple agent-server model:
+
+- **Agent Instances**: Lightweight honeypot deployments that collect local logs and periodically send data to the central server
+- **Server Instance**: Central aggregation point that receives data from multiple agents, deduplicates logs, and provides a unified dashboard
+
+---
+
+### Multi-Instance Quickstart
+
+#### 1. Set Up the Central Server
+
+On your central server machine:
+
+```bash
+# Configure as Multi-Instance server
+./melissae.sh config-server
+
+# Start the Multi-Instance server
+./melissae.sh start-server
+
+# Optional: Start honeypot modules on the server as well
+./melissae.sh start web ssh ftp modbus
+```
+
+The server will display an API key that agents will use to authenticate.
+
+#### 2. Deploy Agent Instances
+
+On each agent machine:
+
+```bash
+# Configure as agent (replace with your server details)
+./melissae.sh config-agent http://SERVER-IP:8888 API-KEY
+
+# Start the agent daemon
+./melissae.sh start-agent
+
+# Start honeypot modules
+./melissae.sh start web ssh ftp modbus
+```
+
+#### 3. Access the Multi-Instance Dashboard
+
+On the server, access the Multi-Instance dashboard at:
+`http://localhost:8080/multi-instance.html`
+
+You can also access it via the main dashboard navigation menu.
+
+---
+
+### Multi-Instance Configuration
+
+#### Server Configuration
+
+The server configuration includes:
+
+```json
+{
+  "instance_id": "unique-server-id",
+  "mode": "server",
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8888,
+    "api_key": "auto-generated-32-char-key"
+  },
+  "timezone": "UTC"
+}
+```
+
+#### Agent Configuration
+
+Agent instances are configured with:
+
+```json
+{
+  "instance_id": "unique-agent-id",
+  "mode": "agent",
+  "agent": {
+    "server_url": "http://server-ip:8888",
+    "api_key": "server-api-key",
+    "sync_interval": 60,
+    "timeout": 30
+  },
+  "timezone": "UTC"
+}
+```
+
+#### Management Commands
+
+```bash
+# Check Multi-Instance status
+./melissae.sh status-multi
+
+# View server/agent logs
+tail -f multi-instance-server.log  # On server
+tail -f multi-instance-agent.log   # On agents
+
+# Reconfigure instance
+./melissae.sh config-server         # Reconfigure as server
+./melissae.sh config-agent URL KEY  # Reconfigure as agent
+```
+
+---
+
+### Multi-Instance Dashboard
+
+The Multi-Instance dashboard provides:
+
+#### Overview Statistics
+- **Connected Instances**: Number of actively reporting agents
+- **Cross-Instance IPs**: Attackers targeting multiple locations
+- **Aggregated Threat Counts**: Total threats across all instances
+- **Recent Activity**: Activity in the last hour across all instances
+
+#### Instance Status Monitor
+- **Real-time Status**: Online/offline status of each instance
+- **Last Seen Timestamps**: When each instance last reported
+- **Per-Instance Statistics**: Log and threat counts for each instance
+- **Hostname Information**: Identifying information for each instance
+
+#### Aggregated Views
+- **Combined Activity Charts**: 24-hour activity across all instances
+- **Protocol Distribution**: Protocol usage across the entire network
+- **Top Threats**: Most active attackers across all instances
+- **Geographic Correlation**: Attackers active on multiple instances
+
+#### View Modes
+- **Aggregated View**: Combined statistics from all instances
+- **By Instance**: Detailed breakdown showing each instance separately
+
+---
+
+#### Network Configuration
+
+For production deployments:
+
+1. **Firewall Rules**: Restrict port 8888 to known agent IPs
+2. **VPN/Tunneling**: Consider VPN connections for agent-server communication
+3. **TLS Termination**: Use a reverse proxy (nginx/apache) for HTTPS if needed
+4. **Network Segmentation**: Isolate the Multi-Instance server in a dedicated network segment
+
+---
+
 ## Threat Intelligence
 
 The Threat Intelligence section of the dashboard provides a simple visual overview of detected threats.  
@@ -443,9 +600,11 @@ Discord : https://discord.gg/RXWn85cnYm
 Priority Tasks :
 
  - [x] **Modbus Industrial Honeypot Module** - Complete TCP honeypot with PLC emulation
+ - [x] **Multi-Instance Mode** - Distributed honeypot deployment with central aggregation
  - [ ] New modules need to be developed (SNMP, MQTT, etc.)
  - [ ] Improve the search engine
  - [ ] Threat Intelligence must be developed
+ - [ ] Multi-Instance enhancements (TLS encryption, geographic mapping, advanced analytics)
 
 ## Credits
 
