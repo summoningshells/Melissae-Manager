@@ -73,12 +73,13 @@ The infrastructure is fully containerized with docker, and modules can be deploy
 #### File Tree
 
 ```bash
--- Melissae
+-- Melissae-Manager
     |-- README.md
     |-- dashboard
     |   |-- conf
     |   |   |-- dashboard.conf
     |   |-- css
+    |   |   |-- multi-instance.css
     |   |   |-- styles.css
     |   |   |-- threat-intel.css
     |   |-- dashboard.html
@@ -89,12 +90,14 @@ The infrastructure is fully containerized with docker, and modules can be deploy
     |   |   |-- backgroundDisplay.js
     |   |   |-- dashboardDisplay.js
     |   |   |-- main.js
+    |   |   |-- multiInstanceDisplay.js
     |   |   |-- searchDisplay.js
     |   |   |-- searchEngine.js
     |   |   |-- threatintelDisplay.js
     |   |-- json
     |   |   |-- logs.json
-    |   |    -- threats.json
+    |   |   |-- threats.json
+    |   |-- multi-instance.html
     |   |-- search.html
     |   |-- threat-intel.html
     |-- docker-compose.yml
@@ -102,26 +105,26 @@ The infrastructure is fully containerized with docker, and modules can be deploy
     |-- modules
     |   |-- ftp
     |   |   |-- logs
-    |   |       |-- vsftpd.log
+    |   |   |   |-- vsftpd.log
     |   |   |-- server
     |   |       |-- ftpuser
     |   |           |-- test.txt
+    |   |-- modbus
+    |   |   |-- Dockerfile
+    |   |   |-- logs
+    |   |   |   |-- modbus.log
+    |   |   |-- server
+    |   |       |-- server.py
     |   |-- ssh
     |   |   |-- Dockerfile
     |   |   |-- logs
     |   |       |-- commands.log
     |   |       |-- sshd.log
-    |   |-- modbus
-    |   |   |-- Dockerfile
-    |   |   |-- server
-    |   |       |-- server.py
-    |   |   |-- logs
-    |   |       |-- modbus.log
-    |    -- web
+    |   |-- web
     |       |-- Dockerfile
     |       |-- conf
-    |       |   |-- web.conf
     |       |   |-- proxy.conf
+    |       |   |-- web.conf
     |       |-- logs
     |       |   |-- access.log
     |       |   |-- error.log
@@ -129,6 +132,9 @@ The infrastructure is fully containerized with docker, and modules can be deploy
     |           |-- index.html
     |-- scripts
         |-- logParser.py
+        |-- multiAggregator.py
+        |-- multiInstance.py
+        |-- multiServer.py
         |-- threatIntel.py
 ```
 
