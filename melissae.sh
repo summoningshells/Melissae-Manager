@@ -73,6 +73,10 @@ install() {
     print_message "Installing Docker packages"
     sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose -y > /dev/null 2>&1
 
+    print_message "Installing Python dependencies"
+    sudo apt-get install python3-pip -y > /dev/null 2>&1
+    pip3 install pytz > /dev/null 2>&1
+
     print_message "Modifying permissions for directories and files"
     chmod -R 777 modules/web/logs
     chmod -R 777 modules/ssh/logs
@@ -162,14 +166,14 @@ start() {
     unique_services=($(echo "${services[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
 
     print_message "Strarting services : ${unique_services[*]}"
-    docker-compose up --build --detach "${unique_services[@]}"
+    docker compose up --build --detach "${unique_services[@]}"
     print_ok_message "Services started successfully."
 }
 
 destroy() {
     print_banner
     print_message "Destroying containers..."
-    docker-compose down > /dev/null 2>&1
+    docker compose down > /dev/null 2>&1
     print_ok_message "Containers destroyed"
 }
 

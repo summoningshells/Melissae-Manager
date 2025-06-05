@@ -74,7 +74,11 @@ def process_logs(input_path, output_path):
         raise ValueError("Files must be in JSON format")
 
     with input_path.open('r', encoding='utf-8') as f:
-        logs = json.load(f)
+        content = f.read().strip()
+        if not content:
+            logs = []
+        else:
+            logs = json.loads(content)
 
     ip_data = defaultdict(list)
     for entry in logs:
