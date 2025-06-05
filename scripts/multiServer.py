@@ -86,7 +86,7 @@ class MelissaeServerHandler(BaseHTTPRequestHandler):
             return False
         
         token = auth_header[7:]
-        expected_token = self.server_instance.config.get('server.api_key', '')
+        expected_token = self.server_instance.config.get('server', {}).get('api_key', '')
         
         # Constant time comparison
         return hmac.compare_digest(token, expected_token)
