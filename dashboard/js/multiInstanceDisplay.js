@@ -102,6 +102,16 @@ class MultiInstanceDashboard {
 
     async loadInstancesStatus() {
         try {
+            // First try to load from local file (updated by aggregator)
+            const localInstancesResponse = await fetch('json/multi-instance.json');
+            if (localInstancesResponse.ok) {
+                const localData = await localInstancesResponse.json();
+                if (localData.instances && localData.instances.length > 0) {
+                    instancesData = localData.instances;
+                    return;
+                }
+            }
+            
             if (!this.apiKey) {
                 instancesData = [{
                     instance_id: 'local',
@@ -160,35 +170,35 @@ class MultiInstanceDashboard {
         };
 
         const statsHTML = `
-            <div class="stat-card multi-instance">
+            <div class="stat-card multi-instance clickable" onclick="dashboard.showInstanceDetails()">
                 <div class="stat-value">${stats.connectedInstances}</div>
                 <div class="stat-label">Connected Instances</div>
             </div>
-            <div class="stat-card cross-instance">
+            <div class="stat-card cross-instance clickable" onclick="dashboard.showCrossInstanceIPs()">
                 <div class="stat-value">${stats.crossInstanceIPs}</div>
                 <div class="stat-label">Cross-Instance IPs</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" onclick="window.location.href='dashboard.html'">
                 <div class="stat-value">${stats.totalLogs}</div>
                 <div class="stat-label">Total Logs (All Instances)</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" onclick="window.location.href='threat-intel.html'">
                 <div class="stat-value">${stats.uniqueIPs}</div>
                 <div class="stat-label">Unique Threat IPs</div>
             </div>
-            <div class="stat-card ${stats.nefariousThreats > 0 ? 'alert' : 'success'}">
+            <div class="stat-card ${stats.nefariousThreats > 0 ? 'alert' : 'success'} clickable" onclick="dashboard.filterThreats('nefarious')">
                 <div class="stat-value">${stats.nefariousThreats}</div>
                 <div class="stat-label">Nefarious Threats</div>
             </div>
-            <div class="stat-card ${stats.maliciousThreats > 0 ? 'alert' : 'success'}">
+            <div class="stat-card ${stats.maliciousThreats > 0 ? 'alert' : 'success'} clickable" onclick="dashboard.filterThreats('malicious')">
                 <div class="stat-value">${stats.maliciousThreats}</div>
                 <div class="stat-label">Malicious Threats</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" onclick="dashboard.filterThreats('suspicious')">
                 <div class="stat-value">${stats.suspiciousThreats}</div>
                 <div class="stat-label">Suspicious IPs</div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card clickable" onclick="dashboard.showRecentActivity()">
                 <div class="stat-value">${stats.recentActivity}</div>
                 <div class="stat-label">Last Hour Activity</div>
             </div>
@@ -530,9 +540,57 @@ class MultiInstanceDashboard {
             </div>
         `;
     }
+    
+    showInstanceDetails() {
+        // Switch to by-instance view
+        document.getElementById('viewModeSelect').value = 'by-instance';
+        currentViewMode = 'by-instance';
+        this.updateView();
+        
+        // Scroll to instances section
+        document.getElementById('instancesStatus').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    showCrossInstanceIPs() {
+        // Find IPs that appear in multiple instances
+        const ipInstances = {};
+        aggregatedLogs.forEach(log => {
+            const ip = log.ip;
+            const instanceId = log.instance_id || 'local';
+            if (!ipInstances[ip]) {
+                ipInstances[ip] = new Set();
+            }
+            ipInstances[ip].add(instanceId);
+        });
+        
+        const crossInstanceIPs = Object.entries(ipInstances)
+            .filter(([ip, instances]) => instances.size > 1)
+            .map(([ip, instances]) => ip);
+        
+        if (crossInstanceIPs.length > 0) {
+            // Redirect to search with cross-instance IPs
+            const searchQuery = crossInstanceIPs.join(' OR ');
+            window.location.href = `search.html?search=${encodeURIComponent(searchQuery)}`;
+        } else {
+            alert('No IPs found across multiple instances');
+        }
+    }
+    
+    filterThreats(verdict) {
+        // Redirect to threat intel page with filter
+        window.location.href = `threat-intel.html?verdict=${verdict}`;
+    }
+    
+    showRecentActivity() {
+        // Show logs from the last hour
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+        const timeFilter = oneHourAgo.toISOString().split('T')[0] + ' ' + oneHourAgo.toTimeString().split(' ')[0];
+        window.location.href = `search.html?search=${encodeURIComponent('after:' + timeFilter)}`;
+    }
 }
 
 // Initialize dashboard when page loads
+const dashboard = new MultiInstanceDashboard();
 document.addEventListener('DOMContentLoaded', () => {
-    new MultiInstanceDashboard();
+    // Dashboard is already initialized
 });

@@ -73,9 +73,11 @@ install() {
     print_message "Installing Docker packages"
     sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin docker-compose -y > /dev/null 2>&1
 
-    print_message "Installing Python dependencies"
-    sudo apt-get install python3-pip -y > /dev/null 2>&1
-    pip3 install pytz > /dev/null 2>&1
+    print_message "Installing Python and dependencies"
+    sudo apt-get install python3 python3-pip python3-venv python3-requests python3-tz -y > /dev/null 2>&1
+    
+    # For any missing packages, use pip in user space
+    python3 -m pip install --user pytz requests 2>/dev/null || true
 
     print_message "Modifying permissions for directories and files"
     chmod -R 777 modules/web/logs
@@ -236,10 +238,8 @@ config_server() {
     
     # Install Python dependencies
     print_message "Installing Python dependencies..."
-    pip3 install requests pytz > /dev/null 2>&1 || {
-        sudo apt-get install python3-pip -y > /dev/null 2>&1
-        pip3 install requests pytz > /dev/null 2>&1
-    }
+    sudo apt-get install python3-requests python3-tz -y > /dev/null 2>&1
+    python3 -m pip install --user requests pytz 2>/dev/null || true
     
     # Add aggregator to crontab
     WORKING_DIRECTORY=$(pwd)
@@ -289,10 +289,8 @@ config_agent() {
     
     # Install Python dependencies
     print_message "Installing Python dependencies..."
-    pip3 install requests > /dev/null 2>&1 || {
-        sudo apt-get install python3-pip -y > /dev/null 2>&1
-        pip3 install requests > /dev/null 2>&1
-    }
+    sudo apt-get install python3-requests -y > /dev/null 2>&1
+    python3 -m pip install --user requests 2>/dev/null || true
     
     # Add agent to crontab for periodic sync
     WORKING_DIRECTORY=$(pwd)

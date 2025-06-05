@@ -246,6 +246,28 @@
     font-size: 0.8rem;
 }
 
+/* Chart container fix for activity timeline */
+.chart-container {
+    position: relative;
+    height: 400px;
+    margin-bottom: 2rem;
+}
+
+.chart-container canvas {
+    max-height: 100%;
+}
+
+/* Clickable stat cards */
+.stat-card.clickable {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card.clickable:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .multi-instance-header {

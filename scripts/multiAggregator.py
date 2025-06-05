@@ -77,6 +77,31 @@ class MultiInstanceAggregator:
             print(f"[ERROR] Invalid response from server: {e}")
             return [], []
     
+    def _fetch_instances_data(self) -> List[Dict]:
+        """Fetch instance information from the multi-instance server"""
+        server_config = self.config.get('server', {})
+        api_key = server_config.get('api_key')
+        port = server_config.get('port', 8888)
+        
+        if not api_key:
+            return []
+        
+        try:
+            url = f"http://localhost:{port}/api/instances"
+            headers = {
+                'Authorization': f'Bearer {api_key}',
+                'Content-Type': 'application/json'
+            }
+            
+            response = requests.get(url, headers=headers, timeout=30)
+            response.raise_for_status()
+            
+            data = response.json()
+            return data.get('instances', [])
+            
+        except:
+            return []
+    
     def _merge_local_and_remote_data(self, remote_logs: List[Dict], remote_threats: List[Dict]) -> tuple:
         """Merge local logs with remote multi-instance data"""
         # Load local data
@@ -274,7 +299,7 @@ class MultiInstanceAggregator:
         }
         return verdicts.get(score, "unknown")
     
-    def _save_aggregated_data(self, logs: List[Dict], threats: List[Dict]):
+    def _save_aggregated_data(self, logs: List[Dict], threats: List[Dict], instances: List[Dict] = None):
         """Save aggregated data to JSON files"""
         os.makedirs(self.output_dir, exist_ok=True)
         
@@ -288,16 +313,27 @@ class MultiInstanceAggregator:
         with open(threats_path, 'w') as f:
             json.dump(threats, f, indent=2, ensure_ascii=False)
         
+        # Save instance data if available
+        if instances is not None:
+            instances_path = os.path.join(self.output_dir, 'multi-instance.json')
+            with open(instances_path, 'w') as f:
+                json.dump({'instances': instances}, f, indent=2, ensure_ascii=False)
+        
         print(f"[INFO] Saved {len(logs)} aggregated logs and {len(threats)} threats")
     
     def aggregate(self):
         """Main aggregation function"""
         print("[INFO] Starting multi-instance aggregation...")
         
+        instances = None
+        
         # Check if we're in server mode
         if self.config.get('mode') == 'server':
             # Fetch data from the multi-instance server
             remote_logs, remote_threats = self._fetch_aggregated_data()
+            
+            # Fetch instance information
+            instances = self._fetch_instances_data()
             
             # Merge with local data
             all_logs, all_threats = self._merge_local_and_remote_data(remote_logs, remote_threats)
@@ -313,7 +349,7 @@ class MultiInstanceAggregator:
         recalculated_threats = self._recalculate_threats(all_logs)
         
         # Save aggregated data
-        self._save_aggregated_data(all_logs, recalculated_threats)
+        self._save_aggregated_data(all_logs, recalculated_threats, instances)
         
         print(f"[INFO] Aggregation complete: {len(all_logs)} logs, {len(recalculated_threats)} unique IPs")
 
